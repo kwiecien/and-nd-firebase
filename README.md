@@ -10,5 +10,16 @@ FriendlyChat is an app that allows users to send and receive text and photos in 
 
 Setup requires creating a Firebase project. See https://firebase.google.com/ for more information.
 
+### Rules
+For testing purposes only the DB setup has to be done in the Firebase Developer Console.
+```json
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+```
+
 ## License
 See [LICENSE](LICENSE)
