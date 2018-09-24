@@ -65,26 +65,39 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initializeUsername();
+        initializeReferencesToViews();
+        initializeMessageListViewAndItsAdapter();
+        initializeProgressBar();
+        initializePhotoPickerButton();
+        initializeMessageEditText();
+        initializeSentButton();
+        initializeFirebase();
+    }
+
+    private void initializeUsername() {
         mUsername = ANONYMOUS;
+    }
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("messages");
-
-        // Initialize references to views
+    private void initializeReferencesToViews() {
         mProgressBar = findViewById(R.id.progressBar);
         mMessageListView = findViewById(R.id.messageListView);
         mPhotoPickerButton = findViewById(R.id.photoPickerButton);
         mMessageEditText = findViewById(R.id.messageEditText);
         mSendButton = findViewById(R.id.sendButton);
+    }
 
-        // Initialize message ListView and its adapter
+    private void initializeMessageListViewAndItsAdapter() {
         List<FriendlyMessage> friendlyMessages = new ArrayList<>();
         mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages);
         mMessageListView.setAdapter(mMessageAdapter);
+    }
 
-        // Initialize progress bar
+    private void initializeProgressBar() {
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+    }
 
+    private void initializePhotoPickerButton() {
         // ImagePickerButton shows an image picker to upload a image for a message
         mPhotoPickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +105,9 @@ public class MainActivity extends AppCompatActivity {
                 // TODO: Fire an intent to show an image picker
             }
         });
+    }
 
+    private void initializeMessageEditText() {
         // Enable Send button when there's text to send
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -113,7 +128,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
+    }
 
+    private void initializeSentButton() {
         // Send button sends a message and clears the EditText
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,7 +141,11 @@ public class MainActivity extends AppCompatActivity {
                 mMessageEditText.setText("");
             }
         });
+    }
 
+    private void initializeFirebase() {
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("messages");
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -134,26 +155,23 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         };
         mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
