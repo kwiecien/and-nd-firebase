@@ -21,5 +21,24 @@ For testing purposes only the DB setup has to be done in the Firebase Developer 
 }
 ```
 
+#### Basic rules with authentication
+```json
+{
+  // https://console.firebase.google.com/project/friendlychat/database/friendlychat/rules
+  "rules": {
+    "messages": {
+      // only authenticated users can read and write the messages node
+    	".read": "auth != null",
+    	".write": "auth != null",
+      "$id": {
+      	// the read and write rules cascade to the individual messages
+       	// messages should have a 'name' and 'text' key or a 'name' and 'photoUrl' key
+       	".validate": "newData.hasChildren(['name', 'text']) && !newData.hasChildren(['photoUrl']) || newData.hasChildren(['name', 'photoUrl']) && !newData.hasChildren(['text'])"
+      }
+    }
+  }
+}
+```
+
 ## License
 See [LICENSE](LICENSE)
