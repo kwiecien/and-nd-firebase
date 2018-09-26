@@ -31,7 +31,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
@@ -92,7 +91,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        if (mAuthStateListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        }
+        detachDatabaseListener();
+        mMessageAdapter.clear();
     }
 
     private void initializeUsername() {
@@ -167,6 +170,29 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
         mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("messages");
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (isSignedIn(user)) {
+                    onSignedInInitialize(user.getDisplayName());
+                } else {
+                    onSignedOutCleanup();
+                    startLogInActivity();
+                }
+            }
+        };
+    }
+
+    private void onSignedInInitialize(String userName) {
+        mUsername = userName;
+        attachDatabaseReadListener();
+    }
+
+    private void attachDatabaseReadListener() {
+        if (mChildEventListener != null) {
+            return;
+        }
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -191,26 +217,23 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (isSignedIn(user)) {
-                    greetUser();
-                } else {
-                    startLogInActivity();
-                }
-            }
-        };
+    }
+
+    private void onSignedOutCleanup() {
+        initializeUsername();
+        mMessageAdapter.clear();
+        detachDatabaseListener();
+    }
+
+    private void detachDatabaseListener() {
+        if (mChildEventListener != null) {
+            mMessagesDatabaseReference.removeEventListener(mChildEventListener);
+            mChildEventListener = null;
+        }
     }
 
     private boolean isSignedIn(@Nullable FirebaseUser user) {
         return user != null;
-    }
-
-    private void greetUser() {
-        Toast.makeText(MainActivity.this,
-                "You're now signed in. Welcome to FriendlyChat!", Toast.LENGTH_SHORT).show();
     }
 
     private void startLogInActivity() {
