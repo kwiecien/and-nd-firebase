@@ -42,6 +42,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseStorage mFirebaseStorage;
+    private StorageReference mChatPhotosStorageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,9 +178,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeFirebase() {
+        initializeDatabase();
+        initializeAuthorization();
+        initializeStorage();
+    }
+
+    private void initializeDatabase() {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mFirebaseAuth = FirebaseAuth.getInstance();
         mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("messages");
+    }
+
+    private void initializeAuthorization() {
+        mFirebaseAuth = FirebaseAuth.getInstance();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -189,6 +202,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    private void initializeStorage() {
+        mFirebaseStorage = FirebaseStorage.getInstance();
+        mChatPhotosStorageReference = mFirebaseStorage.getReference().child("chat_photos");
     }
 
     private void onSignedInInitialize(String userName) {
