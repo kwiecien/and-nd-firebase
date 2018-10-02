@@ -11,6 +11,7 @@ FriendlyChat is an app that allows users to send and receive text and photos in 
 Setup requires creating a Firebase project. See https://firebase.google.com/ for more information.
 
 ### Rules
+#### Database Rules
 For testing purposes only the DB setup has to be done in the Firebase Developer Console.
 ```json
 {
@@ -21,7 +22,7 @@ For testing purposes only the DB setup has to be done in the Firebase Developer 
 }
 ```
 
-#### Basic rules with authentication
+##### Basic rules with authentication
 ```json
 {
   // https://console.firebase.google.com/project/friendlychat/database/friendlychat/rules
@@ -35,6 +36,18 @@ For testing purposes only the DB setup has to be done in the Firebase Developer 
        	// messages should have a 'name' and 'text' key or a 'name' and 'photoUrl' key
        	".validate": "newData.hasChildren(['name', 'text']) && !newData.hasChildren(['photoUrl']) || newData.hasChildren(['name', 'photoUrl']) && !newData.hasChildren(['text'])"
       }
+    }
+  }
+}
+```
+
+#### Storage Rules
+```json
+// https://console.firebase.google.com/project/friendlychat-28cc5/storage/friendlychat-28cc5.appspot.com/rules
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /chat_photos/{allPaths=**} {
+      allow read, write: if request.auth != null && request.resource.size < 3*1024*1024;
     }
   }
 }
