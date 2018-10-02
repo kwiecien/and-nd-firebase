@@ -1,3 +1,5 @@
+import com.google.gms.googleservices.GoogleServicesPlugin
+
 apply plugin: 'com.android.application'
 
 repositories {
@@ -9,7 +11,7 @@ repositories {
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.2'
 
     defaultConfig {
         applicationId "com.google.firebase.udacity.friendlychat"
@@ -41,10 +43,12 @@ dependencies {
     // Displaying images
     implementation 'com.github.bumptech.glide:glide:4.7.1'
 
-    implementation 'com.google.firebase:firebase-core:16.0.3'
-    implementation 'com.google.firebase:firebase-database:16.0.2'
-    implementation 'com.google.firebase:firebase-storage:16.0.2'
+    implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-database:16.0.3'
+    implementation 'com.google.firebase:firebase-storage:16.0.3'
+    implementation 'com.google.firebase:firebase-messaging:17.3.3'
     implementation 'com.firebaseui:firebase-ui-auth:4.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
+GoogleServicesPlugin.config.disableVersionCheck = true
