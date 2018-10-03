@@ -238,6 +238,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
+                mMessageAdapter.getItem(mMessageAdapter.getCount() - 1)
+                        .setText(friendlyMessage.getText());
+                mMessageAdapter.notifyDataSetChanged();
             }
 
             @Override
